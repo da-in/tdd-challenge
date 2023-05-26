@@ -21,9 +21,16 @@
   </a>
 </div>
 
+### 👍 curriculum
+- Jest docs study
+  - Jest Docs | https://jestjs.io/
+- 테스트 코드 기반 구현하기
+  - Test Code Reference | https://github.com/vueuse/vueuse 
+
+</div>
 ### 📢 Rules
 
-- 매일 `오전 10시` 온라인 스터디에서 `코드 리뷰` 및 `문제 선정` _주말, 공휴일 제외_
+- 매주 `화요일 오후 5시` 오프라인 스터디에서 `코드 리뷰` 및 `차주 스터디 범위 선정` _주말, 공휴일 제외_
 - 돌아가면서 선정한 문제 [Issue](https://github.com/da-in/algorithm-study/issues) 로 등록
 - 다음 날 스터디 전까지 문제별 폴더에 `이름.py` 파일 생성 및 `이슈 번호`를 포함한 `PR`
 
