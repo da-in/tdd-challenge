@@ -22,10 +22,8 @@
 </div>
 
 ### 👍 curriculum
-- Jest docs study
-  - Jest Docs | https://jestjs.io/
-- 테스트 코드 기반 구현하기
-  - Test Code Reference | https://github.com/vueuse/vueuse 
+- [Jest docs](https://jestjs.io/) study
+- [vueuse](https://github.com/vueuse/vueuse) 테스트 코드 기반 구현하기
 
 </div>
 ### 📢 Rules
