@@ -11,30 +11,35 @@ export const useAsyncQueue = (promiseQueue: Array<PromiseQueueElement>,
     data: undefined
   })
 
+  const isLastIndex = (index: number, array: Array<any>) => {
+    return index === array.length - 1
+  }
+
   const execute = (previousData: any = undefined) => {
     promiseQueue[activeIndex.value](previousData).then((data)=>{
       result[activeIndex.value] = {
         state: 'fulfilled',
         data: data
       }
-      if (activeIndex.value === promiseQueue.length - 1 && onFinished) {
-        onFinished()
-        return
+      if (isLastIndex(activeIndex.value, promiseQueue)) {
+        if (onFinished) onFinished()
       }
-      activeIndex.value += 1
-      execute(data)
+      else {
+        activeIndex.value += 1
+        execute(data)
+      }
     }).catch((error)=>{
       result[activeIndex.value] = {
         state: 'rejected',
         data: error
       }
-      if (onError) {
-        onError()
+      if (onError) onError()
+      if (interrupt || isLastIndex(activeIndex.value, promiseQueue)) {
+        if (onFinished) onFinished()
+        return
       }
-      if (activeIndex.value === promiseQueue.length - 1 && onFinished) {
-        onFinished()
-      }
-      else if (!interrupt){
+      else {
+        activeIndex.value += 1
         execute()
       }
     })
