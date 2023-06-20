@@ -23,11 +23,10 @@ export const useAsyncQueue = (promiseQueue: Array<PromiseQueueElement>,
       }
       if (isLastIndex(activeIndex.value, promiseQueue)) {
         if (onFinished) onFinished()
+        return
       }
-      else {
-        activeIndex.value += 1
-        execute(data)
-      }
+      activeIndex.value += 1
+      execute(data)
     }).catch((error)=>{
       result[activeIndex.value] = {
         state: 'rejected',
@@ -38,10 +37,8 @@ export const useAsyncQueue = (promiseQueue: Array<PromiseQueueElement>,
         if (onFinished) onFinished()
         return
       }
-      else {
-        activeIndex.value += 1
-        execute()
-      }
+      activeIndex.value += 1
+      execute()
     })
   }
 
