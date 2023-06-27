@@ -1,18 +1,22 @@
-import { onScopeDispose, ref, toRef, watchEffect } from "vue"
+import { onScopeDispose, ref, toRef, watch } from "vue"
 
+export const noop = () => {}
 export const useEventListener = (...args: any[]) => {
-  let target: any
-  let events: any
-  let listeners: any
-  let options: any
+  let target: any, events: any, listeners: any, options: any
+
   if (typeof args[0] === 'string') {
     [events, listeners, options] = args
     target = window
   } else {
     [target, events, listeners, options] = args
   }
+
   const targetRef = toRef(target)
 
+  if (!target) {
+    return noop
+  }
+  
   if (!Array.isArray(events)) {
     events = [events]
   }
@@ -21,24 +25,25 @@ export const useEventListener = (...args: any[]) => {
   }
 
   const removeCandidate = ref([])
-  
   const stop = () => {
     for (const removeFn of removeCandidate.value) {
       removeFn()
     }
     removeCandidate.value = []
   }
-
-  watchEffect(() => {
-    // 이거 안돼요 부수고 싶음 ㅠ
-    if (!targetRef.value) return
+  
+  watch(targetRef, (newValue) => {
+    if (!newValue) {
+      stop()
+      return
+    }
     for (const event of events) {
       for (const listener of listeners) {
-        targetRef.value.addEventListener(event, listener, options)
-        removeCandidate.value.push(() => targetRef.value.removeEventListener(event, listener, options))
+        newValue.addEventListener(event, listener, options)
+        removeCandidate.value.push(() => newValue.removeEventListener(event, listener, options))
       }
     }
-  })
+  }, {immediate: true})
 
   onScopeDispose(stop)
   return stop
