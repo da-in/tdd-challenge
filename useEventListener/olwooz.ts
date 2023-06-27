@@ -21,7 +21,7 @@ export const useEventListener = (...args: any[]) => {
     let removeEventListenerList = []
     
     const remove = () => {
-        removeEventListenerList.forEach(fn => fn())
+        removeEventListenerList.forEach((fn) => fn())
         removeEventListenerList = []
     }
 
@@ -32,7 +32,7 @@ export const useEventListener = (...args: any[]) => {
         const targetElement = toValue(targetRef)
         const optionsObject = toValue(optionsRef)
 
-        listeners.forEach((listener) => {
+        listeners.forEach(listener => {
             events.forEach((event) => {
                 targetElement.addEventListener(event, listener, optionsObject)
                 removeEventListenerList.push(() => targetElement.removeEventListener(event, listener, optionsObject))
