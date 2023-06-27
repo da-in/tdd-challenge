@@ -1,4 +1,4 @@
-import { isRef } from 'vue'
+import { getCurrentScope, onScopeDispose, toRef, watch } from 'vue'
 import { noop } from './index.test'
 
 const normalizeToArray = (value: any) => {
@@ -6,31 +6,58 @@ const normalizeToArray = (value: any) => {
   else return [value]
 }
 
-const isValidTarget = (target: any) => {
-  if (isRef(target) || !target) return false
-  return true
+const isTargetWindow = (target: any) => {
+  return typeof target === 'string'
 }
 
 export const useEventListener = (target: any, event: any, listener: any, options?: any) => {
   const events = normalizeToArray(event)
   const listeners = normalizeToArray(listener)
+  const targetRef = toRef(target)
+  const optionsRef = toRef(options)
 
+  const addEventListener = () => {
+    events.forEach(event => {
+      listeners.forEach(listener => {
+        targetRef.value.addEventListener(event, listener, optionsRef.value)
+      })
+    })
+  }
 
-  if (typeof target === 'string') {
+  const removeEventListener = () => {
+    events.forEach(event => {
+      listeners.forEach(listener => {
+        targetRef.value.removeEventListener(event, listener, optionsRef.value)
+      })
+    })
+  }
+
+  watch(targetRef, (target, prevTarget) => {
+    if (!target) {
+      prevTarget.removeEventListener(event, listener, optionsRef.value)
+    }
+    useEventListener(target, event, listener, options)
+  })
+
+  watch(optionsRef, (options, prevOptions) => {
+    useEventListener(target, event, listener, options)
+  })
+
+  if (isTargetWindow(targetRef.value)) {
     return useEventListener(window, target, event, listener)
   }
 
-  if (isValidTarget(target)) {
-    events.forEach(event =>
-      listeners.forEach(listener => target.addEventListener(event, listener, options))
-    )
-    return () => {
-      events.forEach(event =>
-        listeners.forEach(listener => target.removeEventListener(event, listener, options))
-      )
+  if (targetRef.value) {
+    addEventListener()
+    if (getCurrentScope()) {
+      onScopeDispose(() => {
+        if (typeof targetRef.value === 'string') window.removeEventListener(event, listener, optionsRef.value)
+        else removeEventListener()
+      })
+      return
     }
+    return removeEventListener
   } else {
     return noop
   }
-
 }
