@@ -26,11 +26,10 @@ export const useMemoize = <T, S>(
     const key = getKey(args)
 
     if (cache) {
-      const result = cache.get(key)
       if (!cache.has(key)) {
-        _load(...args)
+        return _load(...args)
       }
-      return result
+      return cache.get(key)
     }
 
     if (key in resultsMap) {
@@ -46,6 +45,8 @@ export const useMemoize = <T, S>(
 
     resultsMap[key] = result
     setCache(key, result)
+
+    if (cache) return cache.get(key)
 
     return result
   }
