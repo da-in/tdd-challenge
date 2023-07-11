@@ -21,7 +21,7 @@ export interface UseMemoizeCache<Key, Value> {
   clear (): void
 }
 
-export function useMemoize<T extends (...args: any[]) => any>(resolver: Function, options?: { getKey?: Function; cache?: any }) {
+export function useMemoize<T extends (...args: any[]) => any>(resolver: Function, options?: { getKey?: Function; cache?: UseMemoizeCache<string, string> }) {
   const cache = new Map()
   const memo = (...args: Parameters<T>) => {
     const key = options?.getKey ? options.getKey(args[0]) : JSON.stringify(args)
