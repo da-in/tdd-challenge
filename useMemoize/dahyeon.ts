@@ -12,28 +12,21 @@ export const useMemoize = <T, S>(
   resolver: (...args: any) => S,
   { getKey: getCustomKey, cache }: { getKey?: Function; cache?: UseMemoizeCache<T, S> } = {},
 ) => {
-  const resultsMap = {}
+  const cacheMap = {}
 
   const getKey = (args: any) => {
     return getCustomKey ? getCustomKey(args) : JSON.stringify(args)
   }
 
-  const setCache = (key: T, result: S) => {
-    if (cache) cache.set(key, result)
-  }
-
   const executor = (...args: any) => {
     const key = getKey(args)
 
-    if (cache) {
-      if (!cache.has(key)) {
-        return _load(...args)
-      }
+    if (cache && cache.has(key)) {
       return cache.get(key)
     }
 
-    if (key in resultsMap) {
-      return resultsMap[key]
+    if (!cache && key in cacheMap) {
+      return cacheMap[key]
     }
 
     return _load(...args)
@@ -43,10 +36,12 @@ export const useMemoize = <T, S>(
     const key = getKey(args)
     const result = resolver(...args)
 
-    resultsMap[key] = result
-    setCache(key, result)
+    cacheMap[key] = result
 
-    if (cache) return cache.get(key)
+    if (cache) {
+      cache.set(key, result)
+      return cache.get(key)
+    }
 
     return result
   }
@@ -55,13 +50,13 @@ export const useMemoize = <T, S>(
     const key = getKey(args)
 
     if (cache) cache.delete(key)
-    delete resultsMap[key]
+    delete cacheMap[key]
   }
 
   const _clear = () => {
     if (cache) cache.clear()
-    Object.keys(resultsMap).forEach((key) => {
-      delete resultsMap[key]
+    Object.keys(cacheMap).forEach((key) => {
+      delete cacheMap[key]
     })
   }
 
