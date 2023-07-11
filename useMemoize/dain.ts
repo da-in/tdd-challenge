@@ -1,8 +1,3 @@
-import { ref } from 'vue'
-import { computed } from 'vue-demi'
-
-export interface UseMemoizeCache {}
-
 export interface MemoizeCache<Key, Value> {
   /**
    * Get value for key
