@@ -69,7 +69,27 @@ export const useUrlSearchParams = (
   })
 
   watch(params, () => {
-    // 내일 마저..
+    const prefixMap = {
+      history: '/',
+      'hash-params': '/',
+      hash: '/#',
+    }
+
+    let prefix = prefixMap[mode]
+
+    const queryList = []
+    for (const [key, value] of Object.entries(params)) {
+      if (isArray(value)) {
+        value.forEach((val) => queryList.push(`${key}=${val}`))
+      } else queryList.push(`${key}=${value}`)
+    }
+
+    if (queryList.length > 0) {
+      if (mode === 'hash-params') prefix += '#'
+      else prefix += '?'
+    }
+
+    window.history.replaceState(null, '', prefix + queryList.join('&'))
   })
 
   return params
