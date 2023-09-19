@@ -1,8 +1,8 @@
 import type { Mock } from 'vitest'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed } from 'vue-demi'
-import type { UseMemoizeCache } from '.'
-import { useMemoize } from '.'
+import type { UseMemoizeCache } from './jiwon'
+import { useMemoize } from './jiwon'
 
 describe('useMemoize', () => {
   const resolver = vi.fn()
@@ -10,10 +10,6 @@ describe('useMemoize', () => {
   beforeEach(() => {
     resolver.mockReset()
     resolver.mockImplementation((arg1: number) => `result-${arg1}`)
-  })
-
-  it('should be defined', () => {
-    expect(useMemoize).toBeDefined()
   })
 
   describe('get', () => {
@@ -98,6 +94,7 @@ describe('useMemoize', () => {
 
       expect(memo(1)).toBe('result-1')
       expect(resolver).not.toHaveBeenCalled()
+      expect(value1.value).toBe('result-1')
 
       expect(memo.load(1)).toBe('new-result-1')
       expect(resolver).toHaveBeenCalledTimes(1)
